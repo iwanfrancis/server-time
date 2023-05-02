@@ -42,8 +42,6 @@ Yarn
 
 ### Setup instructions
 
-Not sure whether you were expecting to test this in the dev server or not. If not, you can run `yarn build` and serve the site however you want.
-
 1. Install
 
 ```
@@ -54,4 +52,12 @@ yarn
 
 ```
 yarn start
+```
+
+3. Alternatively, build and serve locally:
+
+```
+yarn build
+yarn global add serve
+serve -s build
 ```
