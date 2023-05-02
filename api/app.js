@@ -30,7 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.get("/time", (_, res) => {
-  const currentEpoch = Date.now() / 1000;
+  const currentEpoch = Math.round(Date.now() / 1000);
   const response = {
     epoch: currentEpoch,
   };
