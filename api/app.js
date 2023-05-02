@@ -1,20 +1,38 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require("express");
+const logger = require("morgan");
+const promMid = require("express-prometheus-middleware");
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const app = express();
 
-var app = express();
+function checkAuth(req, res, next) {
+  const authHeader = req.get("Authorization");
+  if (authHeader !== "mysecrettoken") {
+    res.status(403).send("Forbidden");
+    return;
+  }
+  next();
+}
 
-app.use(logger('dev'));
+app.use(checkAuth);
+app.use(
+  promMid({
+    metricsPath: "/metrics",
+    collectDefaultMetrics: true,
+    requestDurationBuckets: [0.1, 0.5, 1, 1.5],
+    requestLengthBuckets: [512, 1024, 5120, 10240, 51200, 102400],
+    responseLengthBuckets: [512, 1024, 5120, 10240, 51200, 102400],
+  })
+);
+app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.get("/time", (_, res) => {
+  const currentEpoch = Date.now() / 1000;
+  const response = {
+    epoch: currentEpoch,
+  };
+  res.json(response);
+});
 
 module.exports = app;
