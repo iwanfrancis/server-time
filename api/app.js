@@ -1,6 +1,7 @@
 const express = require("express");
 const logger = require("morgan");
 const promMid = require("express-prometheus-middleware");
+const cors = require("cors");
 
 const app = express();
 
@@ -13,6 +14,7 @@ function checkAuth(req, res, next) {
   next();
 }
 
+app.use(cors());
 app.use(checkAuth);
 app.use(
   promMid({
